@@ -1,0 +1,81 @@
+2Develop a Legal Document Review Application with LangChain
+
+Scenario
+
+Legal professionals frequently deal with large volumes of complex documents such as
+contracts, NDAs, and terms of service. Reviewing these documents manually is time-
+intensive and prone to human error. A solution that leverages AI to help users
+understand, summarize, and query these legal documents can significantly improve
+productivity and reduce legal risk.
+
+This assignment tasks you with building a web application that enables users to upload
+legal documents and receive intelligent, context-aware assistance through modern
+language models.
+
+Problem Statement
+Lawyers and legal teams require an efficient tool to quickly review and understand the
+contents of legal documents. Manually identifying key clauses or summarizing lengthy
+texts is inefficient and costly. There is a need for a user-friendly application that can
+extract text from legal PDFs, summarize key information, and answer document-specific
+questions using Retrieval-Augmented Generation (RAG) and large language models.
+
+
+Objectives
+
+• Build a web-based interface that allows for uploading and reviewing legal PDF
+documents.
+
+• Extract, chunk, and embed the text from these documents for semantic search.
+
+• Use a Retrieval-Augmented Generation (RAG) pipeline to answer questions based
+on document content.
+
+• Generate concise, informative summaries of uploaded legal documents.
+
+• Provide a smooth and secure user experience using platform for deployment.
+
+NOTE: You can create your own sample legal document or a get free legal documents or
+templates online for the purpose of this demo.
+
+Frontend Development
+Design an user interface with sections for uploading files, entering API keys,
+asking questions, and displaying outputs.
+
+• PDF Text Extraction
+• Use PyPDF2 to read and extract text from PDF files.
+• Implement error handling for scanned or encrypted files.
+• Text Chunking and Embedding
+• Split extracted text into manageable chunks using the RecursiveCharacterTextSplitter.
+• Generate vector embeddings using the Gemini embedding model.
+• Store and manage embeddings using FAISS for fast retrieval.
+• Question Answering
+• Retrieve the most relevant document chunks using FAISS.
+• Pass the context and user question to Gemini 1.5 Flash via LangChain.
+• Display the model’s answer clearly to the user
+
+
+Summarization
+• Generate a brief summary of the document using the top relevant chunks
+and Gemini model.
+• Ensure the summary captures the main legal points in a concise format.
+• Configuration and Deployment
+• Securely manage API keys using environment variables.
+• Allow local usage and support easy deployment to Community Cloud.
+• Document all steps in a clear README file.
+• Required Feature Suggestions:
+• API key input via sidebar
+• File uploader supporting text-based PDF documents
+• PDF text preview on successful extraction
+
+Summarization
+• Generate a brief summary of the document using the top relevant chunks
+and Gemini model.
+• Ensure the summary captures the main legal points in a concise format.
+• Configuration and Deployment
+• Securely manage API keys using environment variables.
+• Allow local usage and support easy deployment to Community Cloud.
+• Document all steps in a clear README file.
+• Required Feature Suggestions:
+• API key input via sidebar
+• File uploader supporting text-based PDF documents
+• PDF text preview on successful extraction
