@@ -136,7 +136,6 @@ if uploaded_file and api_key:
                 
                 # Initialize RAG pipeline
                 st.session_state.rag_pipeline = RAGPipeline(
-                    api_key=api_key,
                     chunk_size=chunk_size,
                     chunk_overlap=chunk_overlap,
                     retrieval_k=retrieval_k

@@ -15,19 +15,23 @@ class RAGPipeline:
     Retrieval-Augmented Generation pipeline for legal document Q&A
     """
     
-    def __init__(self, api_key: str, chunk_size: int = 1000, 
+    def __init__(self, chunk_size: int = 1000, 
                  chunk_overlap: int = 200, retrieval_k: int = 3):
         """
         Initialize RAG pipeline.
         
         Args:
-            api_key: Google Gemini API key
             chunk_size: Size of text chunks
             chunk_overlap: Overlap between chunks
             retrieval_k: Number of chunks to retrieve
         """
-        self.api_key = api_key
-        os.environ["GOOGLE_API_KEY"] = api_key
+        # Load API key from environment
+        self.api_key = os.getenv("GOOGLE_API_KEY")
+        if not self.api_key:
+            raise ValueError("GOOGLE_API_KEY not found in environment variables. Please set it in your .env file.")
+        
+        # Set for Google SDK
+        os.environ["GOOGLE_API_KEY"] = self.api_key
         
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
