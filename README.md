@@ -15,8 +15,8 @@ A modern web-based application that leverages AI and Retrieval-Augmented Generat
 
 - **Frontend**: Streamlit
 - **Backend**: Python with LangChain
-- **LLM**: Google Gemini 3 Flash Preview
-- **Embeddings**: Google Gemini Embedding-004
+- **LLM**: Google Gemini 1.5 Flash
+- **Embeddings**: Google Gemini Embedding-001
 - **Vector Database**: FAISS (Facebook AI Similarity Search)
 - **PDF Processing**: PyPDF2
 - **Text Chunking**: LangChain's RecursiveCharacterTextSplitter
@@ -42,7 +42,7 @@ agentic-ai-mod-3-assignment-1/
 
 ## Prerequisites
 
-- Python 3.13+
+- Python 3.12+
 - pip package manager
 - Google Gemini API key (free tier available at [Google AI Studio](https://makersuite.google.com/app/apikey))
 
@@ -101,12 +101,12 @@ agentic-ai-mod-3-assignment-1/
 
 ### Text Chunking & Embedding
 - Splits documents into manageable chunks using `RecursiveCharacterTextSplitter`
-- Generates semantic embeddings using Google Gemini Embedding-004
+- Generates semantic embeddings using Google Gemini Embedding-001
 - Stores embeddings in FAISS for efficient similarity search
 
 ### RAG Question Answering
 - Retrieves relevant document chunks based on query similarity
-- Passes context to Gemini 3 Flash Preview for intelligent responses
+- Passes context to Gemini 1.5 Flash for intelligent responses
 - Provides source attribution for answers
 
 ### Document Summarization

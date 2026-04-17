@@ -3,9 +3,9 @@ RAG Pipeline for legal document Q&A and summarization
 """
 import os
 from typing import List, Optional
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAI, GoogleGenerativeAIEmbeddings
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 
@@ -58,10 +58,10 @@ class RAGPipeline:
         )
         
         # Embeddings: Convert text chunks to vector representations for semantic search
-        self.embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-004")
+        self.embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
         
         # Language model: Google's Gemini for generating answers and summaries
-        self.llm = GoogleGenerativeAI(model="gemini-3-flash-preview", temperature=0.7)
+        self.llm = GoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.7)
         
         # Step 4: Initialize vector store and retriever (created when document is processed)
         self.vector_store = None  # FAISS vector database for embeddings

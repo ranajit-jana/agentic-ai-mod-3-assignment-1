@@ -4,7 +4,7 @@ This document explains how to install dependencies and run the Legal Document Re
 
 ## Requirements
 
-- Python 3.13+
+- Python 3.12+
 - pip package manager
 - Google Gemini API key
 
@@ -12,7 +12,7 @@ This document explains how to install dependencies and run the Legal Document Re
 
 1. Create and activate a virtual environment:
    ```bash
-   python3.13 -m venv venv
+   python3.12 -m venv venv
    source venv/bin/activate
    ```
 
