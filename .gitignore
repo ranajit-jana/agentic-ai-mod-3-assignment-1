@@ -39,7 +39,6 @@ env/
 .DS_Store
 
 # Streamlit
-.streamlit/
 .streamlit_cache/
 .streamlit_cache2/
 

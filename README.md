@@ -65,14 +65,14 @@ agentic-ai-mod-3-assignment-1/
    pip install -r requirements.txt
    ```
 
-4. **Set up environment variables**:
+4. **Set up API key**:
    ```bash
    cp .env.example .env
+   # Edit .env and add your Google Gemini API key:
+   # GOOGLE_API_KEY=your_api_key_here
    ```
-   Edit `.env` and add your Google Gemini API key:
-   ```
-   GOOGLE_API_KEY=your_api_key_here
-   ```
+   
+   **Security Note**: The `.env` file is automatically added to `.gitignore` and will never be committed to GitHub, keeping your API key safe.
 
 ## Usage
 
@@ -150,6 +150,41 @@ For testing, you can use:
 | PDF extraction fails | Verify PDF is text-based, not scanned |
 | Slow embedding generation | Reduce chunk overlap or use smaller documents |
 | FAISS index error | Ensure embeddings match vector dimensions |
+
+## Security Best Practices
+
+### 🔐 API Key Management
+
+The app uses **environment variables** stored in a `.env` file for secure API key management:
+
+- **Secure Storage**: API keys are stored in `.env` file (never committed to Git)
+- **Environment Isolation**: Different keys for development/production
+- **python-dotenv**: Loads environment variables automatically
+- **Git Safety**: `.env` files are protected by `.gitignore`
+
+### ✅ Security Best Practices
+
+**DO:**
+- Keep `.env` file in `.gitignore` (automatically configured)
+- Use different API keys for development and production
+- Rotate API keys regularly
+- Monitor API usage and costs
+- Never share `.env` files
+
+**❌ DON'T:**
+- Hard-code API keys in source files
+- Commit `.env` files to GitHub
+- Share API keys via email or chat
+- Use the same key across multiple projects
+- Log or display API keys in console output
+
+### Why .env Files?
+
+- **Simple**: Single method, easy to understand
+- **Secure**: Never committed to version control
+- **Flexible**: Works across different environments
+- **Standard**: Widely used in Python projects
+- **Deployment Ready**: Easy to configure in cloud platforms
 
 ## Future Enhancements
 

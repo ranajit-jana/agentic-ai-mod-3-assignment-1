@@ -47,11 +47,20 @@ if "extracted_text" not in st.session_state:
 
 # Sidebar
 st.sidebar.markdown("## ⚖️ Configuration")
-api_key = st.sidebar.text_input(
-    "Google Gemini API Key",
-    type="password",
-    help="Get your free API key from https://makersuite.google.com/app/apikey"
-)
+
+# Load API key from .env file
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+api_key = os.getenv("GOOGLE_API_KEY")
+
+if not api_key:
+    st.sidebar.error("❌ GOOGLE_API_KEY not found in .env file")
+    st.sidebar.info("Please create a .env file with your Google Gemini API key")
+    st.stop()
+else:
+    st.sidebar.success("✅ API key loaded from .env file")
 
 st.sidebar.markdown("---")
 st.sidebar.markdown("### Settings")
