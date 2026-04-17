@@ -6,7 +6,9 @@ import sys
 from pathlib import Path
 import streamlit as st
 
-# Add src directory to path
+# Add the src directory to Python's import search path.
+# This allows importing modules located inside src/ (like utils and rag_pipeline)
+# even though the app is running from the project root.
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
 from utils import extract_pdf_text, process_document

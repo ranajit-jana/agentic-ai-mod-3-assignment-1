@@ -6,7 +6,7 @@ from typing import List, Optional
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain.vectorstores import FAISS
-from langchain.chains.question_answering import load_qa_chain
+from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 
 
@@ -18,33 +18,61 @@ class RAGPipeline:
     def __init__(self, chunk_size: int = 1000, 
                  chunk_overlap: int = 200, retrieval_k: int = 3):
         """
-        Initialize RAG pipeline.
+        Initialize the RAG (Retrieval-Augmented Generation) pipeline for legal document processing.
+        
+        This method sets up all necessary components for document analysis including:
+        - API key validation and environment setup
+        - Text chunking configuration
+        - Embedding model initialization
+        - Language model setup for Q&A and summarization
         
         Args:
-            chunk_size: Size of text chunks
-            chunk_overlap: Overlap between chunks
-            retrieval_k: Number of chunks to retrieve
+            chunk_size: Size of text chunks for document splitting (default: 1000 characters)
+            chunk_overlap: Overlap between consecutive chunks to maintain context (default: 200 characters)
+            retrieval_k: Number of most relevant chunks to retrieve for context (default: 3)
+            
+        Raises:
+            ValueError: If GOOGLE_API_KEY is not found in environment variables
         """
-        # Load API key from environment
+        # Step 1: Secure API key management
+        # Load Google Gemini API key from environment variables (.env file)
+        # This ensures the key is never hardcoded and remains secure
         self.api_key = os.getenv("GOOGLE_API_KEY")
         if not self.api_key:
             raise ValueError("GOOGLE_API_KEY not found in environment variables. Please set it in your .env file.")
         
-        # Set for Google SDK
+        # Set the API key in environment for Google SDK to use
         os.environ["GOOGLE_API_KEY"] = self.api_key
         
+        # Step 2: Configure text processing parameters
+        # These control how documents are split into manageable chunks
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
         self.retrieval_k = retrieval_k
         
-        # Initialize components
+        # Step 3: Initialize core LangChain components
+        # Text splitter: Breaks documents into overlapping chunks for better context preservation
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=chunk_size,
             chunk_overlap=chunk_overlap
         )
         
-        self.embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-        self.llm = GoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.7)
+        # Embeddings: Convert text chunks to vector representations for semantic search
+        self.embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-004")
+        
+        # Language model: Google's Gemini for generating answers and summaries
+        self.llm = GoogleGenerativeAI(model="gemini-3-flash-preview", temperature=0.7)
+        
+        # Step 4: Initialize vector store and retriever (created when document is processed)
+        self.vector_store = None  # FAISS vector database for embeddings
+        self.retriever = None     # Semantic search retriever
+        self.text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=chunk_size,
+            chunk_overlap=chunk_overlap
+        )
+        
+        self.embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-004")
+        self.llm = GoogleGenerativeAI(model="gemini-3-flash-preview", temperature=0.7)
         
         self.vector_store = None
         self.retriever = None
@@ -101,10 +129,15 @@ class RAGPipeline:
         # Prepare context from retrieved documents
         context = "\n".join([doc.page_content for doc in relevant_docs])
         
-        # Generate answer
-        chain = load_qa_chain(self.llm, chain_type="stuff", prompt=prompt)
-        response = chain.run(input_documents=relevant_docs, question=question)
-        
+        # Generate answer using a modern RetrievalQA chain
+        chain = RetrievalQA.from_chain_type(
+            llm=self.llm,
+            chain_type="stuff",
+            retriever=self.retriever,
+            chain_type_kwargs={"prompt": prompt}
+        )
+        response = chain.run(question)
+
         return response
     
     def summarize_document(self) -> str:
@@ -141,13 +174,19 @@ class RAGPipeline:
         # Prepare context
         context = "\n".join([doc.page_content for doc in relevant_docs])
         
-        # Generate summary
-        chain = load_qa_chain(self.llm, chain_type="stuff", prompt=prompt)
-        summary = chain.run(input_documents=relevant_docs)
-        
+        # Generate summary using the retriever and custom prompt
+        chain = RetrievalQA.from_chain_type(
+            llm=self.llm,
+            chain_type="stuff",
+            retriever=self.retriever,
+            chain_type_kwargs={"prompt": prompt}
+        )
+        summary = chain.run(summary_question)
+
         return summary
     
-    def extract_key_clauses(self, clause_type: str = "termination") -> List[str]:
+
+    def extract_key_clauses(self, clause_type: str = "payment") -> List[str]:
         """
         Extract specific types of clauses from the document.
         

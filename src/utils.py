@@ -55,9 +55,10 @@ def clean_text(text: str) -> str:
         text: Raw extracted text
         
     Returns:
-        Cleaned text
+        Cleaned text with normalized whitespace
     """
-    # Remove extra whitespace
+    # Normalize whitespace so the text is easier to process later.
+    # This removes extra spaces, newlines, and tabs, and joins tokens with single spaces.
     text = ' '.join(text.split())
     return text
 
@@ -78,6 +79,7 @@ def process_document(text: str, chunk_size: int = 1000, overlap: int = 200) -> L
     step = chunk_size - overlap
     
     for i in range(0, len(text), step):
+        """ from i to i + chunk_size, with an overlap of 'overlap' characters """
         chunk = text[i:i + chunk_size]
         chunks.append(chunk)
     

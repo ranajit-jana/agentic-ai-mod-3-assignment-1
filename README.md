@@ -15,8 +15,8 @@ A modern web-based application that leverages AI and Retrieval-Augmented Generat
 
 - **Frontend**: Streamlit
 - **Backend**: Python with LangChain
-- **LLM**: Google Gemini 1.5 Flash
-- **Embeddings**: Google Gemini Embeddings
+- **LLM**: Google Gemini 3 Flash Preview
+- **Embeddings**: Google Gemini Embedding-004
 - **Vector Database**: FAISS (Facebook AI Similarity Search)
 - **PDF Processing**: PyPDF2
 - **Text Chunking**: LangChain's RecursiveCharacterTextSplitter
@@ -42,7 +42,7 @@ agentic-ai-mod-3-assignment-1/
 
 ## Prerequisites
 
-- Python 3.9+
+- Python 3.13+
 - pip package manager
 - Google Gemini API key (free tier available at [Google AI Studio](https://makersuite.google.com/app/apikey))
 
@@ -56,7 +56,7 @@ agentic-ai-mod-3-assignment-1/
 
 2. **Create a virtual environment**:
    ```bash
-   python -m venv venv
+   python3.13 -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
@@ -101,12 +101,12 @@ agentic-ai-mod-3-assignment-1/
 
 ### Text Chunking & Embedding
 - Splits documents into manageable chunks using `RecursiveCharacterTextSplitter`
-- Generates semantic embeddings using Google Gemini
+- Generates semantic embeddings using Google Gemini Embedding-004
 - Stores embeddings in FAISS for efficient similarity search
 
 ### RAG Question Answering
 - Retrieves relevant document chunks based on query similarity
-- Passes context to Gemini 1.5 Flash for intelligent responses
+- Passes context to Gemini 3 Flash Preview for intelligent responses
 - Provides source attribution for answers
 
 ### Document Summarization
@@ -171,30 +171,6 @@ The app uses **environment variables** stored in a `.env` file for secure API ke
 - Monitor API usage and costs
 - Never share `.env` files
 
-**❌ DON'T:**
-- Hard-code API keys in source files
-- Commit `.env` files to GitHub
-- Share API keys via email or chat
-- Use the same key across multiple projects
-- Log or display API keys in console output
-
-### Why .env Files?
-
-- **Simple**: Single method, easy to understand
-- **Secure**: Never committed to version control
-- **Flexible**: Works across different environments
-- **Standard**: Widely used in Python projects
-- **Deployment Ready**: Easy to configure in cloud platforms
-
-## Future Enhancements
-
-- [ ] Support for scanned PDFs using OCR
-- [ ] Multi-document comparison
-- [ ] Specific clause extraction
-- [ ] Risk assessment scoring
-- [ ] Document redaction capabilities
-- [ ] Chat history persistence
-- [ ] Export functionality (PDF, DOCX)
 
 ## Contributing
 
@@ -210,6 +186,6 @@ For issues, questions, or suggestions, please open an issue on GitHub.
 
 ---
 
-**Author**: [Your Name]  
+**Author**: Ranajit Jana
 **Created**: 2026  
 **Assignment**: Agentic AI Module 3 - Assignment 1
