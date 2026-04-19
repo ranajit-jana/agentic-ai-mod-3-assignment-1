@@ -6,8 +6,9 @@ from typing import List, Optional
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_community.vectorstores import FAISS
-from langchain.chains import RetrievalQA
-from langchain.prompts import PromptTemplate
+from langchain_core.runnables import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
 
 
 class RAGPipeline:
@@ -58,24 +59,14 @@ class RAGPipeline:
         )
         
         # Embeddings: Convert text chunks to vector representations for semantic search
-        self.embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+        self.embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
         
         # Language model: Google's Gemini for generating answers and summaries
-        self.llm = GoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.7)
+        self.llm = GoogleGenerativeAI(model="gemini-3-flash-preview", temperature=0.7)
         
         # Step 4: Initialize vector store and retriever (created when document is processed)
         self.vector_store = None  # FAISS vector database for embeddings
         self.retriever = None     # Semantic search retriever
-        self.text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=chunk_size,
-            chunk_overlap=chunk_overlap
-        )
-        
-        self.embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-004")
-        self.llm = GoogleGenerativeAI(model="gemini-3-flash-preview", temperature=0.7)
-        
-        self.vector_store = None
-        self.retriever = None
     
     def process_document(self, text: str) -> None:
         """
@@ -104,9 +95,6 @@ class RAGPipeline:
         if not self.retriever:
             raise ValueError("Document not processed. Please upload a document first.")
         
-        # Retrieve relevant chunks
-        relevant_docs = self.retriever.get_relevant_documents(question)
-        
         # Create prompt template for legal Q&A
         prompt_template = """
         You are an expert legal assistant reviewing legal documents. 
@@ -116,27 +104,25 @@ class RAGPipeline:
         Context:
         {context}
         
-        Question: {question}
+        Question: {input}
         
         Answer:
         """
         
-        prompt = PromptTemplate(
-            template=prompt_template,
-            input_variables=["context", "question"]
+        prompt = ChatPromptTemplate.from_template(prompt_template)
+        
+        # Create LCEL retrieval chain
+        def format_docs(docs):
+            return "\n\n".join(doc.page_content for doc in docs)
+        
+        chain = (
+            {"context": self.retriever | format_docs, "input": RunnablePassthrough()}
+            | prompt
+            | self.llm
+            | StrOutputParser()
         )
         
-        # Prepare context from retrieved documents
-        context = "\n".join([doc.page_content for doc in relevant_docs])
-        
-        # Generate answer using a modern RetrievalQA chain
-        chain = RetrievalQA.from_chain_type(
-            llm=self.llm,
-            chain_type="stuff",
-            retriever=self.retriever,
-            chain_type_kwargs={"prompt": prompt}
-        )
-        response = chain.run(question)
+        response = chain.invoke(question)
 
         return response
     
@@ -152,7 +138,7 @@ class RAGPipeline:
         
         # Get relevant chunks for summary
         summary_question = "What are the main points, key terms, and important clauses in this document?"
-        relevant_docs = self.retriever.get_relevant_documents(summary_question)
+        relevant_docs = self.retriever.invoke(summary_question)
         
         # Create summarization prompt
         summary_prompt = """
@@ -166,22 +152,12 @@ class RAGPipeline:
         Summary:
         """
         
-        prompt = PromptTemplate(
-            template=summary_prompt,
-            input_variables=["context"]
-        )
+        prompt = ChatPromptTemplate.from_template(summary_prompt)
         
-        # Prepare context
-        context = "\n".join([doc.page_content for doc in relevant_docs])
-        
-        # Generate summary using the retriever and custom prompt
-        chain = RetrievalQA.from_chain_type(
-            llm=self.llm,
-            chain_type="stuff",
-            retriever=self.retriever,
-            chain_type_kwargs={"prompt": prompt}
-        )
-        summary = chain.run(summary_question)
+        # Generate summary
+        context = "\n\n".join(doc.page_content for doc in relevant_docs)
+        chain = prompt | self.llm | StrOutputParser()
+        summary = chain.invoke({"context": context})
 
         return summary
     
@@ -200,6 +176,6 @@ class RAGPipeline:
             raise ValueError("Document not processed. Please upload a document first.")
         
         query = f"What are the {clause_type} clauses in this document?"
-        relevant_docs = self.retriever.get_relevant_documents(query)
+        relevant_docs = self.retriever.invoke(query)
         
         return [doc.page_content for doc in relevant_docs]
